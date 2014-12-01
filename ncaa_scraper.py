@@ -1,5 +1,6 @@
 import json
 import urllib2
+import sys
 
 from bs4 import BeautifulSoup
 from sqlalchemy import create_engine
@@ -42,11 +43,11 @@ def get_data(game_link):
     return game_data, None
 
 
-def run():
+def run(yr='2012'):
     engine = create_engine('sqlite:///play_by_play.db')
     store = Storage(engine)
     
-    date_links = get_game_date_links()
+    date_links = get_game_date_links(yr)
     for date_link in date_links:
         game_links = get_game_links(date_link)
         for game_link in game_links:
@@ -78,4 +79,7 @@ def run():
                         store.save_play(per, time, home_score, away_score, home_comment, away_comment, game)
 
 if __name__=='__main__':
-    run()
+    if len(sys.argv) > 1:
+        run(sys.argv[1])
+    else:
+        run()
